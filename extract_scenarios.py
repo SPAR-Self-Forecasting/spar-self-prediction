@@ -1,22 +1,36 @@
 #!/usr/bin/env python3
 """
 Extract Bloom evaluation results into a structured JSON format for self-prediction study.
+
+Usage:
+    python extract_scenarios.py <behavior_name>
+
+Examples:
+    python extract_scenarios.py sycophancy
+    python extract_scenarios.py refusal
 """
 
 import json
-import os
+import sys
 from pathlib import Path
 
-def extract_scenarios():
-    results_dir = Path("bloom-results/sycophancy")
+
+def extract_scenarios(behavior: str):
+    results_dir = Path(f"bloom-results/{behavior}")
+
+    if not results_dir.exists():
+        print(f"Error: Results directory not found: {results_dir}")
+        print(f"Available behaviors: {[d.name for d in Path('bloom-results').iterdir() if d.is_dir()]}")
+        sys.exit(1)
 
     # Load judgment data
-    with open(results_dir / "judgment.json") as f:
-        judgment_data = json.load(f)
+    judgment_file = results_dir / "judgment.json"
+    if not judgment_file.exists():
+        print(f"Error: judgment.json not found in {results_dir}")
+        sys.exit(1)
 
-    # Load ideation data for original scenario descriptions
-    with open(results_dir / "ideation.json") as f:
-        ideation_data = json.load(f)
+    with open(judgment_file) as f:
+        judgment_data = json.load(f)
 
     scenarios = []
 
@@ -79,19 +93,25 @@ def extract_scenarios():
     # Sort by scenario_id
     scenarios.sort(key=lambda x: x["scenario_id"])
 
+    # Get target model from judgment data or default
+    target_model = judgment_data.get("model", "unknown")
+
     output = {
-        "behavior": "sycophancy",
-        "target_model": "claude-sonnet-4",
+        "behavior": behavior,
+        "target_model": target_model,
         "total_scenarios": len(scenarios),
         "summary_statistics": judgment_data["summary_statistics"],
         "scenarios": scenarios
     }
 
-    # Write output
-    with open("bloom_scenarios.json", "w") as f:
+    # Write output with behavior-specific filename
+    output_file = f"bloom_scenarios_{behavior}.json"
+    with open(output_file, "w") as f:
         json.dump(output, f, indent=2)
 
-    print(f"Extracted {len(scenarios)} scenarios to bloom_scenarios.json")
+    print(f"Extracted {len(scenarios)} scenarios to {output_file}")
+    print(f"\nBehavior: {behavior}")
+    print(f"Target model: {target_model}")
     print(f"\nSummary statistics:")
     print(f"  Average behavior presence score: {judgment_data['summary_statistics']['average_behavior_presence_score']}")
     print(f"  Min score: {judgment_data['summary_statistics']['min_behavior_presence_score']}")
@@ -103,5 +123,19 @@ def extract_scenarios():
     for s in scenarios:
         print(f"  Scenario {s['scenario_id']}: {s['bloom_score']}")
 
+
 if __name__ == "__main__":
-    extract_scenarios()
+    if len(sys.argv) != 2:
+        print("Usage: python extract_scenarios.py <behavior_name>")
+        print("Example: python extract_scenarios.py sycophancy")
+
+        # List available behaviors
+        results_dir = Path("bloom-results")
+        if results_dir.exists():
+            behaviors = [d.name for d in results_dir.iterdir() if d.is_dir()]
+            if behaviors:
+                print(f"\nAvailable behaviors: {behaviors}")
+        sys.exit(1)
+
+    behavior = sys.argv[1]
+    extract_scenarios(behavior)

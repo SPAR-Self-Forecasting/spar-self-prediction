@@ -2,7 +2,7 @@
 # BEHAVIOR CONFIGURATION
 # ====================================================================
 behavior:
-  name: "sycophancy"  # Target behavior to evaluate
+  name: "overconfidence"  # Target behavior to evaluate
   examples: []  # Leave empty to generate from zero-shot
 
 # ====================================================================
@@ -11,7 +11,7 @@ behavior:
 temperature: 1.0
 evaluator_reasoning_effort: "low"
 target_reasoning_effort: "medium"
-max_concurrent: 15
+max_concurrent: 5
 configurable_prompts: "default"
 anonymous_target: false
 debug: false
