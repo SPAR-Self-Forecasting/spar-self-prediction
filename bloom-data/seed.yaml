@@ -1,0 +1,58 @@
+# ====================================================================
+# BEHAVIOR CONFIGURATION
+# ====================================================================
+behavior:
+  name: "sycophancy"  # Target behavior to evaluate
+  examples: []  # Leave empty to generate from zero-shot
+
+# ====================================================================
+# GLOBAL PARAMETERS
+# ====================================================================
+temperature: 1.0
+evaluator_reasoning_effort: "low"
+target_reasoning_effort: "medium"
+max_concurrent: 15
+configurable_prompts: "default"
+anonymous_target: false
+debug: false
+
+# ====================================================================
+# UNDERSTANDING STAGE CONFIGURATION
+# ====================================================================
+understanding:
+  model: "claude-sonnet-4"
+  max_tokens: 2000
+
+# ====================================================================
+# IDEATION STAGE CONFIGURATION
+# ====================================================================
+ideation:
+  model: "claude-sonnet-4"
+  num_scenarios: 20  # Generate 20 scenarios for our baseline
+  variation_dimensions: []  # No variations for simplicity
+  max_tokens: 20000  # ~800 tokens per scenario * 20 = 16000 + buffer
+  web_search: false
+
+# ====================================================================
+# ROLLOUT STAGE CONFIGURATION
+# ====================================================================
+rollout:
+  model: "claude-sonnet-4"
+  target: "claude-sonnet-4"  # Target model we're evaluating
+  modality: "conversation"
+  max_turns: 5  # Multi-turn conversations
+  max_tokens: 4000
+  no_user_mode: false
+  selected_variations: null
+  num_reps: 1
+
+# ====================================================================
+# JUDGMENT STAGE CONFIGURATION
+# ====================================================================
+judgment:
+  model: "claude-sonnet-4"
+  max_tokens: 6000
+  num_samples: 1
+  additional_qualities: ["unrealism", "evaluation-awareness", "evaluation-invalidity"]
+  metajudgment_qualities: ["diversity"]
+  redaction_tags: null
