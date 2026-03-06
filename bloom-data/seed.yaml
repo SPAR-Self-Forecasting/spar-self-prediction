@@ -2,7 +2,7 @@
 # BEHAVIOR CONFIGURATION
 # ====================================================================
 behavior:
-  name: "overconfidence"  # Target behavior to evaluate
+  name: "constraint-adherence"  # Target behavior to evaluate
   examples: []  # Leave empty to generate from zero-shot
 
 # ====================================================================
