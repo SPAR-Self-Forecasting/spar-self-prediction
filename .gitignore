@@ -16,3 +16,10 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# External tools (re-clone as needed)
+petri/
+
+# Petri outputs (large files)
+test_outputs/
+logs/
